@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Design tokens (RGB triplets, чтобы работали alpha-модификаторы Tailwind) ===== */
+:root, [data-theme='dark'] {
+  --bg: 9 9 15; --surface: 23 19 38; --card: 28 24 48;
+  --primary: 139 92 246; --accent: 167 139 250;
+  --ink: 245 243 255; --muted: 170 164 187;
+  --radius: 1.25rem; --nav-h: 4rem; --ease: cubic-bezier(.22,1,.36,1);
+  --font: 'Manrope', ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+/* Заготовка светлой темы на будущее */
+[data-theme='light'] {
+  --bg: 248 246 255; --surface: 238 234 252; --card: 255 255 255;
+  --ink: 24 18 44; --muted: 106 98 130;
+}
+html, body, #root { height: 100%; }
+body { margin: 0; background: rgb(var(--bg)); color: rgb(var(--ink)); font-family: var(--font);
+  overflow-x: hidden; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+button, a { touch-action: manipulation; }
+
+@layer components {
+  .card { @apply rounded-[var(--radius)] border border-white/5 bg-card; transition: transform .35s var(--ease), border-color .35s, box-shadow .35s; }
+  .card-hover:hover { transform: translateY(-4px); border-color: rgb(var(--primary) / .5); box-shadow: 0 12px 40px -12px rgb(var(--primary) / .45); }
+  .btn { @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-5 font-semibold transition active:scale-95; }
+  .btn-primary { @apply btn bg-primary text-white hover:bg-accent hover:text-bg; }
+  .btn-ghost { @apply btn bg-white/5 text-ink hover:bg-white/10; }
+  .page { @apply mx-auto w-full max-w-6xl px-4 pb-28 pt-6 md:px-8 md:pb-12; animation: page-in .45s var(--ease) both; }
+}
+@keyframes page-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* ===== 3D-фон ===== */
+.bg-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: radial-gradient(60% 50% at 80% 0%, rgb(var(--primary) / .18), transparent 70%),
+              radial-gradient(50% 40% at 0% 100%, rgb(var(--accent) / .10), transparent 70%); }
+.scene3d { position: absolute; perspective: 900px; }
+.cube { position: relative; width: var(--s); height: var(--s); transform-style: preserve-3d; animation: spin var(--t) linear infinite; will-change: transform; }
+.cube i { position: absolute; inset: 0; border: 1px solid rgb(var(--accent) / .35); background: rgb(var(--primary) / .06); }
+.cube i:nth-child(1) { transform: translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(2) { transform: rotateY(180deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(3) { transform: rotateY(90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(4) { transform: rotateY(-90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(5) { transform: rotateX(90deg) translateZ(calc(var(--s) / 2)); }
+.cube i:nth-child(6) { transform: rotateX(-90deg) translateZ(calc(var(--s) / 2)); }
+.sphere { position: absolute; border-radius: 9999px; animation: float var(--t) ease-in-out infinite;
+  background: radial-gradient(circle at 30% 30%, rgb(var(--accent) / .35), rgb(var(--primary) / .08) 60%, transparent 70%); }
+.shape { position: absolute; border: 1px solid rgb(var(--accent) / .25); animation: spin2d var(--t) linear infinite; }
+@keyframes spin { to { transform: rotateX(360deg) rotateY(360deg); } }
+@keyframes spin2d { to { transform: rotate(360deg); } }
+@keyframes float { 50% { transform: translateY(-28px); } }
+
+/* Отключение эффектов: настройка или prefers-reduced-motion */
+[data-effects='off'] .bg-scene .scene3d, [data-effects='off'] .bg-scene .sphere, [data-effects='off'] .bg-scene .shape { display: none; }
+@media (prefers-reduced-motion: reduce) { .cube, .sphere, .shape { animation: none !important; } .page { animation: none; } }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-top { padding-top: env(safe-area-inset-top, 0px); }
+
+/* ===== Solitaire ===== */
+@keyframes pop { from { opacity: .4; transform: translateY(-10px) scale(.95); } to { opacity: 1; transform: none; } }
+.sol-card { animation: pop var(--anim, 200ms) var(--ease) both; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; cursor: grab; }
+.sol-slot { border: 2px dashed rgb(255 255 255 / .14); border-radius: 10px; box-sizing: border-box; position: absolute; }
+.sol-board { touch-action: pan-y; -webkit-user-select: none; user-select: none; }
